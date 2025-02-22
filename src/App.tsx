@@ -1,25 +1,37 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import { Provider } from 'react-redux';
+import CssBaseline from '@mui/material/CssBaseline';
+import { theme } from './theme/theme';
+import { store } from './features/store';
+
+// Import components (we'll create these next)
+import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
+import Transactions from './pages/Transactions';
+import Budget from './pages/Budget';
+import Accounts from './pages/Accounts';
+import Settings from './pages/Settings';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/transactions" element={<Transactions />} />
+              <Route path="/budget" element={<Budget />} />
+              <Route path="/accounts" element={<Accounts />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
+          </Layout>
+        </Router>
+      </ThemeProvider>
+    </Provider>
   );
 }
 
