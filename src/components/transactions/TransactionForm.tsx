@@ -11,9 +11,6 @@ import {
   IconButton,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Transaction } from '../../types';
 
 interface TransactionFormProps {
@@ -42,7 +39,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   transaction,
 }) => {
   const [formData, setFormData] = React.useState<Partial<Transaction>>({
-    date: new Date().toISOString(),
+    date: new Date().toISOString().split('T')[0],
     amount: 0,
     category: '',
     description: '',
@@ -50,20 +47,11 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     ...transaction,
   });
 
-  const handleChange = (name: string) => (event: any) => {
+  const handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
       [name]: event.target.value,
     }));
-  };
-
-  const handleDateChange = (date: Date | null) => {
-    if (date) {
-      setFormData((prev) => ({
-        ...prev,
-        date: date.toISOString(),
-      }));
-    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -90,69 +78,70 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       </DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent dividers>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <DatePicker
-                  label="Date"
-                  value={formData.date ? new Date(formData.date) : null}
-                  onChange={handleDateChange}
-                  slotProps={{ textField: { fullWidth: true } }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Description"
-                  value={formData.description}
-                  onChange={handleChange('description')}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Amount"
-                  type="number"
-                  value={formData.amount}
-                  onChange={handleChange('amount')}
-                  required
-                  InputProps={{
-                    startAdornment: '$',
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  select
-                  fullWidth
-                  label="Type"
-                  value={formData.type}
-                  onChange={handleChange('type')}
-                  required
-                >
-                  <MenuItem value="income">Income</MenuItem>
-                  <MenuItem value="expense">Expense</MenuItem>
-                </TextField>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  select
-                  fullWidth
-                  label="Category"
-                  value={formData.category}
-                  onChange={handleChange('category')}
-                  required
-                >
-                  {categories.map((category) => (
-                    <MenuItem key={category} value={category.toLowerCase()}>
-                      {category}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                type="date"
+                label="Date"
+                value={formData.date}
+                onChange={handleChange('date')}
+                fullWidth
+                required
+                InputLabelProps={{ shrink: true }}
+              />
             </Grid>
-          </LocalizationProvider>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Description"
+                value={formData.description}
+                onChange={handleChange('description')}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Amount"
+                type="number"
+                value={formData.amount}
+                onChange={handleChange('amount')}
+                required
+                InputProps={{
+                  startAdornment: '$',
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                select
+                fullWidth
+                label="Type"
+                value={formData.type}
+                onChange={handleChange('type')}
+                required
+              >
+                <MenuItem value="income">Income</MenuItem>
+                <MenuItem value="expense">Expense</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                select
+                fullWidth
+                label="Category"
+                value={formData.category}
+                onChange={handleChange('category')}
+                required
+              >
+                {categories.map((category) => (
+                  <MenuItem key={category} value={category.toLowerCase()}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={onClose}>Cancel</Button>

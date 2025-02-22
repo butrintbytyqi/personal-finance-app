@@ -17,7 +17,7 @@ import { Transaction } from '../types';
 const mockTransactions: Transaction[] = [
   {
     id: '1',
-    date: new Date().toISOString(),
+    date: new Date().toISOString().split('T')[0],
     amount: 1500,
     category: 'salary',
     description: 'Monthly Salary',
@@ -25,7 +25,7 @@ const mockTransactions: Transaction[] = [
   },
   {
     id: '2',
-    date: new Date().toISOString(),
+    date: new Date().toISOString().split('T')[0],
     amount: 50,
     category: 'food & dining',
     description: 'Grocery Shopping',
