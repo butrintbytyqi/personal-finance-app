@@ -12,30 +12,16 @@ import TransactionFilters from '../components/transactions/TransactionFilters';
 import TransactionList from '../components/transactions/TransactionList';
 import TransactionForm from '../components/transactions/TransactionForm';
 import { Transaction } from '../types';
-
-// Temporary mock data
-const mockTransactions: Transaction[] = [
-  {
-    id: '1',
-    date: new Date().toISOString().split('T')[0],
-    amount: 1500,
-    category: 'salary',
-    description: 'Monthly Salary',
-    type: 'income',
-  },
-  {
-    id: '2',
-    date: new Date().toISOString().split('T')[0],
-    amount: 50,
-    category: 'food & dining',
-    description: 'Grocery Shopping',
-    type: 'expense',
-  },
-  // Add more mock transactions as needed
-];
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import {
+  addTransaction,
+  updateTransaction,
+  deleteTransaction,
+} from '../features/financesSlice';
 
 const Transactions = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
+  const dispatch = useAppDispatch();
+  const transactions = useAppSelector((state) => state.finances.transactions);
   const [filters, setFilters] = useState({
     startDate: null,
     endDate: null,
@@ -73,7 +59,7 @@ const Transactions = () => {
       id: Date.now().toString(), // In a real app, this would be handled by the backend
     } as Transaction;
 
-    setTransactions((prev) => [...prev, newTransaction]);
+    dispatch(addTransaction(newTransaction));
     setOpenForm(false);
   };
 
@@ -83,23 +69,43 @@ const Transactions = () => {
   };
 
   const handleUpdateTransaction = (updatedTransaction: Partial<Transaction>) => {
-    setTransactions((prev) =>
-      prev.map((t) =>
-        t.id === selectedTransaction?.id ? { ...t, ...updatedTransaction } : t
-      )
-    );
+    if (selectedTransaction) {
+      dispatch(updateTransaction({ ...selectedTransaction, ...updatedTransaction }));
+    }
     setOpenForm(false);
     setSelectedTransaction(undefined);
   };
 
   const handleDeleteTransaction = (transactionId: string) => {
-    setTransactions((prev) => prev.filter((t) => t.id !== transactionId));
+    dispatch(deleteTransaction(transactionId));
   };
 
   const handleCloseForm = () => {
     setOpenForm(false);
     setSelectedTransaction(undefined);
   };
+
+  const filteredTransactions = transactions.filter((transaction) => {
+    if (filters.startDate && new Date(transaction.date) < new Date(filters.startDate)) {
+      return false;
+    }
+    if (filters.endDate && new Date(transaction.date) > new Date(filters.endDate)) {
+      return false;
+    }
+    if (filters.type !== 'all' && transaction.type !== filters.type) {
+      return false;
+    }
+    if (filters.category !== 'all' && transaction.category !== filters.category) {
+      return false;
+    }
+    if (filters.minAmount && transaction.amount < Number(filters.minAmount)) {
+      return false;
+    }
+    if (filters.maxAmount && transaction.amount > Number(filters.maxAmount)) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <Box>
@@ -129,11 +135,12 @@ const Transactions = () => {
           <Card>
             <CardContent>
               <TransactionList
-                transactions={transactions}
+                transactions={filteredTransactions}
                 onEditTransaction={handleEditTransaction}
                 onDeleteTransaction={handleDeleteTransaction}
                 page={page}
                 rowsPerPage={rowsPerPage}
+                totalCount={filteredTransactions.length}
                 onPageChange={(_, newPage) => setPage(newPage)}
                 onRowsPerPageChange={(event) => {
                   setRowsPerPage(parseInt(event.target.value, 10));
