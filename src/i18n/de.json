@@ -1,0 +1,89 @@
+{
+  "common": {
+    "add": "Hinzufügen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "search": "Suchen",
+    "filter": "Filter",
+    "total": "Gesamt",
+    "settings": "Einstellungen"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "transactions": "Transaktionen",
+    "accounts": "Konten",
+    "budget": "Budget",
+    "settings": "Einstellungen"
+  },
+  "transactions": {
+    "title": "Transaktionen",
+    "newTransaction": "Neue Transaktion",
+    "editTransaction": "Transaktion bearbeiten",
+    "type": "Typ",
+    "amount": "Betrag",
+    "date": "Datum",
+    "category": "Kategorie",
+    "description": "Beschreibung",
+    "income": "Einnahmen",
+    "expense": "Ausgaben"
+  },
+  "accounts": {
+    "title": "Konten",
+    "newAccount": "Neues Konto",
+    "editAccount": "Konto bearbeiten",
+    "accountName": "Kontoname",
+    "accountType": "Kontotyp",
+    "balance": "Kontostand",
+    "accountNumber": "Kontonummer",
+    "types": {
+      "checking": "Girokonto",
+      "savings": "Sparkonto",
+      "credit": "Kreditkarte",
+      "investment": "Investition"
+    }
+  },
+  "budget": {
+    "title": "Budget",
+    "newBudget": "Neues Budget",
+    "editBudget": "Budget bearbeiten",
+    "category": "Kategorie",
+    "limit": "Limit",
+    "spent": "Ausgegeben",
+    "remaining": "Verbleibend",
+    "period": "Zeitraum",
+    "periods": {
+      "monthly": "Monatlich",
+      "yearly": "Jährlich"
+    },
+    "overBudget": "Budget überschritten um"
+  },
+  "categories": {
+    "food": "Essen & Trinken",
+    "shopping": "Einkaufen",
+    "transport": "Transport",
+    "utilities": "Nebenkosten",
+    "entertainment": "Unterhaltung",
+    "health": "Gesundheit",
+    "travel": "Reisen",
+    "other": "Sonstiges"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "theme": "Design",
+    "currency": "Währung",
+    "dateFormat": "Datumsformat",
+    "notifications": "Benachrichtigungen",
+    "themes": {
+      "light": "Hell",
+      "dark": "Dunkel"
+    },
+    "themeUpdated": "Design erfolgreich aktualisiert",
+    "currencyUpdated": "Währung erfolgreich aktualisiert",
+    "dateFormatUpdated": "Datumsformat erfolgreich aktualisiert",
+    "notificationsUpdated": "Benachrichtigungen erfolgreich aktualisiert",
+    "languageUpdated": "Sprache erfolgreich aktualisiert"
+  }
+}

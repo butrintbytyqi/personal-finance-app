@@ -3,92 +3,76 @@ import {
   Card,
   CardContent,
   Typography,
-  Box,
   Grid,
+  Box,
+  Chip,
+  IconButton,
 } from '@mui/material';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { Edit, Delete } from '@mui/icons-material';
 import { Account } from '../../types';
+import { useFormatting } from '../../hooks/useFormatting';
 
-interface AccountOverviewProps {
+export interface AccountOverviewProps {
   accounts: Account[];
+  onEdit: (account: Account) => void;
+  onDelete: (accountId: string) => void;
 }
 
-const AccountOverview: React.FC<AccountOverviewProps> = ({ accounts }) => {
-  const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
-  const totalAssets = accounts.reduce((sum, account) => 
-    sum + (account.balance > 0 ? account.balance : 0), 0);
-  const totalLiabilities = accounts.reduce((sum, account) => 
-    sum + (account.balance < 0 ? Math.abs(account.balance) : 0), 0);
+const AccountOverview: React.FC<AccountOverviewProps> = ({ accounts, onEdit, onDelete }) => {
+  const { formatCurrency } = useFormatting();
 
-  const chartData = accounts.map((account) => ({
-    name: account.name,
-    balance: account.balance,
-  }));
+  const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
 
   return (
     <Card>
       <CardContent>
-        <Typography variant="h6" gutterBottom>
-          Account Overview
-        </Typography>
-        
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                Net Worth
-              </Typography>
-              <Typography variant="h4" color={totalBalance >= 0 ? 'primary' : 'error.main'}>
-                ${totalBalance.toLocaleString()}
-              </Typography>
-            </Box>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Accounts Overview
+          </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+            {formatCurrency(totalBalance)}
+          </Typography>
+          <Typography variant="subtitle2" color="textSecondary">
+            Total Balance
+          </Typography>
+        </Box>
 
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                Total Assets
-              </Typography>
-              <Typography variant="h4" color="success.main">
-                ${totalAssets.toLocaleString()}
-              </Typography>
-            </Box>
-
-            <Box>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                Total Liabilities
-              </Typography>
-              <Typography variant="h4" color="error.main">
-                ${totalLiabilities.toLocaleString()}
-              </Typography>
-            </Box>
-          </Grid>
-
-          <Grid item xs={12} md={8}>
-            <Box sx={{ width: '100%', height: 300 }}>
-              <ResponsiveContainer>
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip 
-                    formatter={(value: number) => `$${value.toLocaleString()}`}
-                  />
-                  <Bar 
-                    dataKey="balance" 
-                    fill="#2196f3"
-                    stroke="#2196f3"
-                    fillOpacity={0.8}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={entry.balance >= 0 ? '#2196f3' : '#f44336'}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </Box>
-          </Grid>
+        <Grid container spacing={2}>
+          {accounts.map((account) => (
+            <Grid item xs={12} sm={6} md={4} key={account.id}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                      {account.name}
+                    </Typography>
+                    <Box>
+                      <IconButton size="small" onClick={() => onEdit(account)}>
+                        <Edit fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => onDelete(account.id)} color="error">
+                        <Delete fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Chip
+                      label={account.type}
+                      size="small"
+                      color={account.type === 'savings' ? 'success' : 'primary'}
+                    />
+                    <Typography variant="h6" color="primary">
+                      {formatCurrency(account.balance)}
+                    </Typography>
+                  </Box>
+                  <Typography variant="caption" color="textSecondary">
+                    Account #{account.accountNumber}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
         </Grid>
       </CardContent>
     </Card>

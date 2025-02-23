@@ -1,0 +1,94 @@
+{
+  "common": {
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search",
+    "filter": "Filter",
+    "total": "Total",
+    "settings": "Settings"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "transactions": "Transactions",
+    "accounts": "Accounts",
+    "budget": "Budget",
+    "settings": "Settings"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "newTransaction": "New Transaction",
+    "editTransaction": "Edit Transaction",
+    "type": "Type",
+    "amount": "Amount",
+    "date": "Date",
+    "category": "Category",
+    "description": "Description",
+    "income": "Income",
+    "expense": "Expense"
+  },
+  "accounts": {
+    "title": "Accounts",
+    "newAccount": "New Account",
+    "editAccount": "Edit Account",
+    "accountName": "Account Name",
+    "accountType": "Account Type",
+    "balance": "Balance",
+    "accountNumber": "Account Number",
+    "types": {
+      "checking": "Checking",
+      "savings": "Savings",
+      "credit": "Credit Card",
+      "investment": "Investment"
+    }
+  },
+  "budget": {
+    "title": "Budget",
+    "newBudget": "New Budget",
+    "editBudget": "Edit Budget",
+    "category": "Category",
+    "limit": "Limit",
+    "spent": "Spent",
+    "remaining": "Remaining",
+    "period": "Period",
+    "periods": {
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    },
+    "overBudget": "Over budget by"
+  },
+  "categories": {
+    "food": "Food & Dining",
+    "shopping": "Shopping",
+    "transport": "Transportation",
+    "utilities": "Bills & Utilities",
+    "entertainment": "Entertainment",
+    "health": "Health & Fitness",
+    "travel": "Travel",
+    "other": "Other"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "appearance": "Appearance",
+    "darkMode": "Dark Mode",
+    "currency": "Currency",
+    "dateFormat": "Date Format",
+    "notifications": "Notifications",
+    "enableNotifications": "Enable Notifications",
+    "emailNotifications": "Email Notifications",
+    "pushNotifications": "Push Notifications",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "themeUpdated": "Theme updated successfully",
+    "currencyUpdated": "Currency updated successfully",
+    "dateFormatUpdated": "Date format updated successfully",
+    "notificationsUpdated": "Notifications updated successfully",
+    "languageUpdated": "Language updated successfully"
+  }
+}

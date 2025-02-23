@@ -1,46 +1,58 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
-  Typography,
   Button,
+  Typography,
   Grid,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
-import AccountCard from '../components/accounts/AccountCard';
-import AccountForm from '../components/accounts/AccountForm';
-import AccountOverview from '../components/accounts/AccountOverview';
-import { Account } from '../types';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import {
   addAccount,
   updateAccount,
   deleteAccount,
 } from '../features/financesSlice';
+import AccountOverview from '../components/accounts/AccountOverview';
+import AccountForm from '../components/accounts/AccountForm';
+import { Account } from '../types';
 
 const Accounts = () => {
   const dispatch = useAppDispatch();
   const accounts = useAppSelector((state) => state.finances.accounts);
-  const [openForm, setOpenForm] = React.useState(false);
-  const [selectedAccount, setSelectedAccount] = React.useState<Account | undefined>(undefined);
+  const [openForm, setOpenForm] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<Account | undefined>();
 
-  const handleAddAccount = (account: Partial<Account>) => {
-    const newAccount = {
-      ...account,
-      id: Date.now().toString(),
-    } as Account;
+  const handleOpenForm = () => {
+    setSelectedAccount(undefined);
+    setOpenForm(true);
+  };
 
+  const handleCloseForm = () => {
+    setOpenForm(false);
+    setSelectedAccount(undefined);
+  };
+
+  const handleAddAccount = (newAccount: Omit<Account, 'id'>) => {
     dispatch(addAccount(newAccount));
     setOpenForm(false);
   };
 
-  const handleEditAccount = (account: Account) => {
-    setSelectedAccount(account);
-    setOpenForm(true);
+  const handleEditAccount = (updatedAccount: Omit<Account, 'id'>) => {
+    if (selectedAccount) {
+      dispatch(updateAccount({
+        id: selectedAccount.id,
+        changes: updatedAccount
+      }));
+    }
+    setOpenForm(false);
   };
 
   const handleUpdateAccount = (updatedAccount: Partial<Account>) => {
     if (selectedAccount) {
-      dispatch(updateAccount({ ...selectedAccount, ...updatedAccount }));
+      dispatch(updateAccount({
+        id: selectedAccount.id,
+        changes: updatedAccount,
+      }));
     }
     setOpenForm(false);
     setSelectedAccount(undefined);
@@ -48,11 +60,6 @@ const Accounts = () => {
 
   const handleDeleteAccount = (accountId: string) => {
     dispatch(deleteAccount(accountId));
-  };
-
-  const handleCloseForm = () => {
-    setOpenForm(false);
-    setSelectedAccount(undefined);
   };
 
   return (
@@ -64,7 +71,7 @@ const Accounts = () => {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => setOpenForm(true)}
+          onClick={handleOpenForm}
         >
           Add Account
         </Button>
@@ -72,25 +79,19 @@ const Accounts = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <AccountOverview accounts={accounts} />
+          <AccountOverview
+            accounts={accounts}
+            onEdit={handleEditAccount}
+            onDelete={handleDeleteAccount}
+          />
         </Grid>
-
-        {accounts.map((account) => (
-          <Grid item xs={12} sm={6} md={4} key={account.id}>
-            <AccountCard
-              account={account}
-              onEdit={handleEditAccount}
-              onDelete={handleDeleteAccount}
-            />
-          </Grid>
-        ))}
       </Grid>
 
       <AccountForm
         open={openForm}
         onClose={handleCloseForm}
         onSubmit={selectedAccount ? handleUpdateAccount : handleAddAccount}
-        account={selectedAccount}
+        initialValues={selectedAccount}
       />
     </Box>
   );

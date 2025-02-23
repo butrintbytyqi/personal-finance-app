@@ -4,54 +4,57 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Button,
-  Grid,
+  TextField,
   MenuItem,
-  IconButton,
+  Grid,
 } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
 import { Budget } from '../../types';
+import { useFormatting } from '../../hooks/useFormatting';
 
 interface BudgetFormProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (budget: Partial<Budget>) => void;
-  budget?: Budget;
+  onSubmit: (budget: Omit<Budget, 'id'>) => void;
+  initialValues?: Budget;
 }
 
 const categories = [
   'Food & Dining',
   'Shopping',
-  'Transport',
+  'Transportation',
   'Bills & Utilities',
   'Entertainment',
-  'Health',
+  'Health & Fitness',
   'Travel',
-  'Education',
   'Other',
-];
+] as const;
+
+const periods = [
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'yearly', label: 'Yearly' },
+] as const;
 
 const BudgetForm: React.FC<BudgetFormProps> = ({
   open,
   onClose,
   onSubmit,
-  budget,
+  initialValues,
 }) => {
-  const [formData, setFormData] = React.useState<Partial<Budget>>({
-    category: '',
+  const { currency } = useFormatting();
+  const [formData, setFormData] = React.useState<Omit<Budget, 'id'>>({
+    category: categories[0],
     limit: 0,
     spent: 0,
     period: 'monthly',
-    ...budget,
+    ...initialValues,
   });
 
-  const handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'limit' || name === 'spent' 
-        ? Number(event.target.value) 
-        : event.target.value,
+      [name]: ['limit', 'spent'].includes(name) ? parseFloat(value) || 0 : value,
     }));
   };
 
@@ -62,35 +65,24 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {budget ? 'Edit Budget' : 'Add Budget'}
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
       <form onSubmit={handleSubmit}>
-        <DialogContent dividers>
-          <Grid container spacing={2}>
+        <DialogTitle>
+          {initialValues ? 'Edit Budget' : 'Add Budget'}
+        </DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12}>
               <TextField
+                name="category"
+                label="Category"
                 select
                 fullWidth
-                label="Category"
                 value={formData.category}
-                onChange={handleChange('category')}
+                onChange={handleChange}
                 required
               >
                 {categories.map((category) => (
-                  <MenuItem key={category} value={category.toLowerCase()}>
+                  <MenuItem key={category} value={category}>
                     {category}
                   </MenuItem>
                 ))}
@@ -98,50 +90,51 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                fullWidth
-                label="Budget Limit"
+                name="limit"
+                label={`Budget Limit (${currency})`}
                 type="number"
+                fullWidth
                 value={formData.limit}
-                onChange={handleChange('limit')}
+                onChange={handleChange}
                 required
-                InputProps={{
-                  startAdornment: '$',
-                }}
+                inputProps={{ step: 0.01 }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
+                name="spent"
+                label={`Amount Spent (${currency})`}
+                type="number"
+                fullWidth
+                value={formData.spent}
+                onChange={handleChange}
+                required
+                inputProps={{ step: 0.01 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="period"
+                label="Budget Period"
                 select
                 fullWidth
-                label="Period"
                 value={formData.period}
-                onChange={handleChange('period')}
+                onChange={handleChange}
                 required
               >
-                <MenuItem value="weekly">Weekly</MenuItem>
-                <MenuItem value="monthly">Monthly</MenuItem>
+                {periods.map((period) => (
+                  <MenuItem key={period.value} value={period.value}>
+                    {period.label}
+                  </MenuItem>
+                ))}
               </TextField>
             </Grid>
-            {budget && (
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Amount Spent"
-                  type="number"
-                  value={formData.spent}
-                  onChange={handleChange('spent')}
-                  InputProps={{
-                    startAdornment: '$',
-                  }}
-                />
-              </Grid>
-            )}
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
+        <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
           <Button type="submit" variant="contained" color="primary">
-            {budget ? 'Update' : 'Add'}
+            {initialValues ? 'Save Changes' : 'Add Budget'}
           </Button>
         </DialogActions>
       </form>

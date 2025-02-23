@@ -1,0 +1,89 @@
+{
+  "common": {
+    "add": "Shto",
+    "edit": "Ndrysho",
+    "delete": "Fshi",
+    "save": "Ruaj",
+    "cancel": "Anulo",
+    "search": "Kërko",
+    "filter": "Filtro",
+    "total": "Totali",
+    "settings": "Cilësimet"
+  },
+  "navigation": {
+    "dashboard": "Paneli",
+    "transactions": "Transaksionet",
+    "accounts": "Llogaritë",
+    "budget": "Buxheti",
+    "settings": "Cilësimet"
+  },
+  "transactions": {
+    "title": "Transaksionet",
+    "newTransaction": "Transaksion i Ri",
+    "editTransaction": "Ndrysho Transaksionin",
+    "type": "Lloji",
+    "amount": "Shuma",
+    "date": "Data",
+    "category": "Kategoria",
+    "description": "Përshkrimi",
+    "income": "Të Ardhura",
+    "expense": "Shpenzim"
+  },
+  "accounts": {
+    "title": "Llogaritë",
+    "newAccount": "Llogari e Re",
+    "editAccount": "Ndrysho Llogarinë",
+    "accountName": "Emri i Llogarisë",
+    "accountType": "Lloji i Llogarisë",
+    "balance": "Gjendja",
+    "accountNumber": "Numri i Llogarisë",
+    "types": {
+      "checking": "Rrjedhëse",
+      "savings": "Kursime",
+      "credit": "Kredit",
+      "investment": "Investim"
+    }
+  },
+  "budget": {
+    "title": "Buxheti",
+    "newBudget": "Buxhet i Ri",
+    "editBudget": "Ndrysho Buxhetin",
+    "category": "Kategoria",
+    "limit": "Limiti",
+    "spent": "Shpenzuar",
+    "remaining": "Mbetur",
+    "period": "Periudha",
+    "periods": {
+      "monthly": "Mujor",
+      "yearly": "Vjetor"
+    },
+    "overBudget": "Mbi buxhet për"
+  },
+  "categories": {
+    "food": "Ushqim & Pije",
+    "shopping": "Shopping",
+    "transport": "Transport",
+    "utilities": "Shërbime",
+    "entertainment": "Argëtim",
+    "health": "Shëndet",
+    "travel": "Udhëtime",
+    "other": "Të Tjera"
+  },
+  "settings": {
+    "title": "Cilësimet",
+    "language": "Gjuha",
+    "theme": "Tema",
+    "currency": "Monedha",
+    "dateFormat": "Formati i Datës",
+    "notifications": "Njoftimet",
+    "themes": {
+      "light": "E Ndritshme",
+      "dark": "E Errët"
+    },
+    "themeUpdated": "Tema u ndryshua me sukses",
+    "currencyUpdated": "Monedha u ndryshua me sukses",
+    "dateFormatUpdated": "Formati i datës u ndryshua me sukses",
+    "notificationsUpdated": "Njoftimet u ndryshuan me sukses",
+    "languageUpdated": "Gjuha u ndryshua me sukses"
+  }
+}

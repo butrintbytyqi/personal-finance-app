@@ -38,16 +38,21 @@ export const store = configureStore({
 });
 
 // Subscribe to store changes to save state
+let saveTimeout: NodeJS.Timeout;
 store.subscribe(() => {
-  const state = store.getState();
-  saveState({
-    finances: {
-      ...state.finances,
-      isLoading: false,
-      error: null
-    },
-    settings: state.settings
-  });
+  // Debounce the save operation to prevent too many writes
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    const state = store.getState();
+    saveState({
+      finances: {
+        ...state.finances,
+        isLoading: false,
+        error: null
+      },
+      settings: state.settings
+    });
+  }, 100);
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

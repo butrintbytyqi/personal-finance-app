@@ -1,119 +1,146 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Transaction, Budget, Account, User, UserSettings } from '../types';
+import { RootState } from '../store';
+import { v4 as uuidv4 } from 'uuid';
 
 interface FinancesState {
-  user: User | null;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    preferences: UserSettings;
+  } | null;
+  accounts: Account[];
   transactions: Transaction[];
   budgets: Budget[];
-  accounts: Account[];
   isLoading: boolean;
   error: string | null;
 }
 
-const defaultUser: User = {
-  id: '1',
-  email: '',
-  settings: {
-    currency: 'USD',
-    language: 'en',
-    darkMode: false,
-    notifications: true,
-    email: '',
-  },
-};
-
 const initialState: FinancesState = {
-  user: defaultUser, // Initialize with default user
+  user: {
+    id: '1',
+    name: 'User',
+    email: 'user@example.com',
+    preferences: {
+      theme: {
+        mode: 'light',
+        primaryColor: '#1976d2'
+      },
+      language: 'sq',
+      currency: 'EUR',
+      dateFormat: 'DD/MM/YYYY',
+      notifications: {
+        enabled: true,
+        email: false,
+        push: true,
+        frequency: 'daily'
+      }
+    }
+  },
+  accounts: [],
   transactions: [],
   budgets: [],
-  accounts: [],
   isLoading: false,
-  error: null,
+  error: null
 };
 
-const financesSlice = createSlice({
+export const financesSlice = createSlice({
   name: 'finances',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<User | null>) => {
-      state.user = action.payload;
+    addTransaction: (state, action: PayloadAction<Omit<Transaction, 'id'>>) => {
+      const newTransaction: Transaction = {
+        id: uuidv4(),
+        ...action.payload
+      };
+      state.transactions.push(newTransaction);
     },
-    updateUserSettings: (state, action: PayloadAction<UserSettings>) => {
-      if (state.user) {
-        state.user.settings = action.payload;
-      }
-    },
-    setTransactions: (state, action: PayloadAction<Transaction[]>) => {
-      state.transactions = action.payload;
-    },
-    addTransaction: (state, action: PayloadAction<Transaction>) => {
-      state.transactions.push(action.payload);
-    },
-    updateTransaction: (state, action: PayloadAction<Transaction>) => {
-      const index = state.transactions.findIndex(t => t.id === action.payload.id);
+    updateTransaction: (state, action: PayloadAction<{ id: string; changes: Partial<Transaction> }>) => {
+      const { id, changes } = action.payload;
+      const index = state.transactions.findIndex(t => t.id === id);
       if (index !== -1) {
-        state.transactions[index] = action.payload;
+        state.transactions[index] = {
+          ...state.transactions[index],
+          ...changes
+        };
       }
     },
     deleteTransaction: (state, action: PayloadAction<string>) => {
       state.transactions = state.transactions.filter(t => t.id !== action.payload);
     },
-    setBudgets: (state, action: PayloadAction<Budget[]>) => {
-      state.budgets = action.payload;
+    addAccount: (state, action: PayloadAction<Omit<Account, 'id'>>) => {
+      const newAccount: Account = {
+        id: uuidv4(),
+        ...action.payload
+      };
+      state.accounts.push(newAccount);
     },
-    addBudget: (state, action: PayloadAction<Budget>) => {
-      state.budgets.push(action.payload);
-    },
-    updateBudget: (state, action: PayloadAction<Budget>) => {
-      const index = state.budgets.findIndex(b => b.id === action.payload.id);
+    updateAccount: (state, action: PayloadAction<{ id: string; changes: Partial<Account> }>) => {
+      const { id, changes } = action.payload;
+      const index = state.accounts.findIndex(a => a.id === id);
       if (index !== -1) {
-        state.budgets[index] = action.payload;
+        state.accounts[index] = {
+          ...state.accounts[index],
+          ...changes
+        };
+      }
+    },
+    deleteAccount: (state, action: PayloadAction<string>) => {
+      state.accounts = state.accounts.filter(a => a.id !== action.payload);
+    },
+    addBudget: (state, action: PayloadAction<Omit<Budget, 'id'>>) => {
+      const newBudget: Budget = {
+        id: uuidv4(),
+        ...action.payload
+      };
+      state.budgets.push(newBudget);
+    },
+    updateBudget: (state, action: PayloadAction<{ id: string; changes: Partial<Budget> }>) => {
+      const { id, changes } = action.payload;
+      const index = state.budgets.findIndex(b => b.id === id);
+      if (index !== -1) {
+        state.budgets[index] = {
+          ...state.budgets[index],
+          ...changes
+        };
       }
     },
     deleteBudget: (state, action: PayloadAction<string>) => {
       state.budgets = state.budgets.filter(b => b.id !== action.payload);
     },
-    setAccounts: (state, action: PayloadAction<Account[]>) => {
-      state.accounts = action.payload;
-    },
-    addAccount: (state, action: PayloadAction<Account>) => {
-      state.accounts.push(action.payload);
-    },
-    updateAccount: (state, action: PayloadAction<Account>) => {
-      const index = state.accounts.findIndex(a => a.id === action.payload.id);
-      if (index !== -1) {
-        state.accounts[index] = action.payload;
+    updateUserSettings: (state, action: PayloadAction<Partial<UserSettings>>) => {
+      if (state.user) {
+        state.user.preferences = {
+          ...state.user.preferences,
+          ...action.payload
+        };
       }
-    },
-    deleteAccount: (state, action: PayloadAction<string>) => {
-      state.accounts = state.accounts.filter(a => a.id !== action.payload);
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
-    },
-  },
+    }
+  }
 });
 
 export const {
-  setUser,
-  updateUserSettings,
-  setTransactions,
   addTransaction,
   updateTransaction,
   deleteTransaction,
-  setBudgets,
-  addBudget,
-  updateBudget,
-  deleteBudget,
-  setAccounts,
   addAccount,
   updateAccount,
   deleteAccount,
+  addBudget,
+  updateBudget,
+  deleteBudget,
+  updateUserSettings,
   setLoading,
-  setError,
+  setError
 } = financesSlice.actions;
+
+export const selectUserSettings = (state: RootState) => state.finances.user?.preferences;
 
 export default financesSlice.reducer;

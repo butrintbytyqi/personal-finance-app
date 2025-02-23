@@ -1,165 +1,148 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Button,
-  Grid,
+  TextField,
   MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
-  IconButton,
-  SelectChangeEvent,
+  Grid,
 } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
 import { Transaction } from '../../types';
+import { useFormatting } from '../../hooks/useFormatting';
 
 interface TransactionFormProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (transaction: Partial<Transaction>) => void;
-  transaction?: Transaction;
+  onSubmit: (transaction: Omit<Transaction, 'id'>) => void;
+  initialValues?: Transaction;
+  categories: string[];
 }
-
-const categories = [
-  'Food & Dining',
-  'Shopping',
-  'Transportation',
-  'Bills & Utilities',
-  'Entertainment',
-  'Health & Fitness',
-  'Travel',
-  'Other',
-];
 
 const TransactionForm: React.FC<TransactionFormProps> = ({
   open,
   onClose,
   onSubmit,
-  transaction,
+  initialValues,
+  categories,
 }) => {
-  const initialFormData: Partial<Transaction> = {
+  const { currency } = useFormatting();
+  const [formData, setFormData] = React.useState<Omit<Transaction, 'id'>>({
+    date: new Date().toISOString().split('T')[0],
     title: '',
+    description: '',
     amount: 0,
     type: 'expense',
     category: '',
-    date: new Date().toISOString().split('T')[0],
     notes: '',
-  };
+    ...initialValues,
+  });
 
-  const [formData, setFormData] = useState<Partial<Transaction>>(
-    transaction || initialFormData
-  );
-
-  const handleChange = (name: keyof Transaction) => (
-    event: React.ChangeEvent<HTMLInputElement | { value: unknown }> | SelectChangeEvent
-  ) => {
-    const value = event.target.value;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'amount' ? Number(value) : value,
+      [name]: name === 'amount' ? parseFloat(value) || 0 : value,
     }));
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     onSubmit(formData);
-    if (!transaction) {
-      setFormData(initialFormData);
-    }
+    onClose();
   };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {transaction ? 'Edit Transaction' : 'Add New Transaction'}
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: 'grey.500',
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
       <form onSubmit={handleSubmit}>
+        <DialogTitle>
+          {initialValues ? 'Edit Transaction' : 'Add Transaction'}
+        </DialogTitle>
         <DialogContent>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12}>
               <TextField
+                name="date"
+                label="Date"
+                type="date"
                 fullWidth
+                value={formData.date}
+                onChange={handleChange}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="title"
                 label="Title"
-                value={formData.title || ''}
-                onChange={handleChange('title')}
+                fullWidth
+                value={formData.title}
+                onChange={handleChange}
                 required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="description"
+                label="Description"
+                fullWidth
+                value={formData.description}
+                onChange={handleChange}
+                multiline
+                rows={2}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                fullWidth
-                label="Amount"
+                name="amount"
+                label={`Amount (${currency})`}
                 type="number"
-                value={formData.amount || ''}
-                onChange={handleChange('amount')}
+                fullWidth
+                value={formData.amount}
+                onChange={handleChange}
                 required
                 inputProps={{ min: 0, step: 0.01 }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth required>
-                <InputLabel>Type</InputLabel>
-                <Select
-                  value={formData.type || 'expense'}
-                  label="Type"
-                  onChange={handleChange('type')}
-                >
-                  <MenuItem value="income">Income</MenuItem>
-                  <MenuItem value="expense">Expense</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth required>
-                <InputLabel>Category</InputLabel>
-                <Select
-                  value={formData.category || ''}
-                  label="Category"
-                  onChange={handleChange('category')}
-                >
-                  {categories.map((category) => (
-                    <MenuItem key={category} value={category}>
-                      {category}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
               <TextField
+                name="type"
+                label="Type"
+                select
                 fullWidth
-                label="Date"
-                type="date"
-                value={formData.date || ''}
-                onChange={handleChange('date')}
+                value={formData.type}
+                onChange={handleChange}
                 required
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
+              >
+                <MenuItem value="expense">Expense</MenuItem>
+                <MenuItem value="income">Income</MenuItem>
+              </TextField>
             </Grid>
             <Grid item xs={12}>
               <TextField
+                name="category"
+                label="Category"
+                select
                 fullWidth
+                value={formData.category}
+                onChange={handleChange}
+                required
+              >
+                {categories.map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="notes"
                 label="Notes"
-                value={formData.notes || ''}
-                onChange={handleChange('notes')}
+                fullWidth
+                value={formData.notes}
+                onChange={handleChange}
                 multiline
                 rows={3}
               />
@@ -169,7 +152,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
           <Button type="submit" variant="contained" color="primary">
-            {transaction ? 'Save Changes' : 'Add Transaction'}
+            {initialValues ? 'Save Changes' : 'Add Transaction'}
           </Button>
         </DialogActions>
       </form>

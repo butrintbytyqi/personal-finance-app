@@ -4,47 +4,49 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Button,
-  Grid,
+  TextField,
   MenuItem,
-  IconButton,
+  Grid,
 } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
 import { Account } from '../../types';
+import { useFormatting } from '../../hooks/useFormatting';
 
 interface AccountFormProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (account: Partial<Account>) => void;
-  account?: Account;
+  onSubmit: (account: Omit<Account, 'id'>) => void;
+  initialValues?: Account;
 }
 
 const accountTypes = [
-  'Checking',
-  'Savings',
-  'Credit',
-  'Investment',
-  'Other',
-];
+  { value: 'checking', label: 'Checking' },
+  { value: 'savings', label: 'Savings' },
+  { value: 'credit', label: 'Credit Card' },
+  { value: 'investment', label: 'Investment' },
+] as const;
 
 const AccountForm: React.FC<AccountFormProps> = ({
   open,
   onClose,
   onSubmit,
-  account,
+  initialValues,
 }) => {
-  const [formData, setFormData] = React.useState<Partial<Account>>({
+  const { currency } = useFormatting();
+  const [formData, setFormData] = React.useState<Omit<Account, 'id'>>({
     name: '',
     type: 'checking',
     balance: 0,
-    ...account,
+    accountNumber: '',
+    currency,
+    ...initialValues,
   });
 
-  const handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'balance' ? Number(event.target.value) : event.target.value,
+      [name]: name === 'balance' ? parseFloat(value) || 0 : value,
     }));
   };
 
@@ -55,68 +57,67 @@ const AccountForm: React.FC<AccountFormProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {account ? 'Edit Account' : 'Add Account'}
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
       <form onSubmit={handleSubmit}>
-        <DialogContent dividers>
-          <Grid container spacing={2}>
+        <DialogTitle>
+          {initialValues ? 'Edit Account' : 'Add Account'}
+        </DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12}>
               <TextField
-                fullWidth
+                name="name"
                 label="Account Name"
+                fullWidth
                 value={formData.name}
-                onChange={handleChange('name')}
+                onChange={handleChange}
                 required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
+                name="type"
+                label="Account Type"
                 select
                 fullWidth
-                label="Account Type"
                 value={formData.type}
-                onChange={handleChange('type')}
+                onChange={handleChange}
                 required
               >
                 {accountTypes.map((type) => (
-                  <MenuItem key={type} value={type.toLowerCase()}>
-                    {type}
+                  <MenuItem key={type.value} value={type.value}>
+                    {type.label}
                   </MenuItem>
                 ))}
               </TextField>
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                fullWidth
-                label="Balance"
+                name="balance"
+                label={`Balance (${currency})`}
                 type="number"
+                fullWidth
                 value={formData.balance}
-                onChange={handleChange('balance')}
+                onChange={handleChange}
                 required
-                InputProps={{
-                  startAdornment: '$',
-                }}
+                inputProps={{ step: 0.01 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="accountNumber"
+                label="Account Number"
+                fullWidth
+                value={formData.accountNumber}
+                onChange={handleChange}
+                required
               />
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
+        <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
           <Button type="submit" variant="contained" color="primary">
-            {account ? 'Update' : 'Add'}
+            {initialValues ? 'Save Changes' : 'Add Account'}
           </Button>
         </DialogActions>
       </form>

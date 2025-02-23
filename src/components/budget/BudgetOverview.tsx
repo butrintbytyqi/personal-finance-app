@@ -3,96 +3,125 @@ import {
   Card,
   CardContent,
   Typography,
+  LinearProgress,
   Box,
   Grid,
+  IconButton,
 } from '@mui/material';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { Edit, Delete } from '@mui/icons-material';
 import { Budget } from '../../types';
+import { useFormatting } from '../../hooks/useFormatting';
 
-interface BudgetOverviewProps {
+export interface BudgetOverviewProps {
   budgets: Budget[];
+  onEdit: (budget: Budget) => void;
+  onDelete: (budgetId: string) => void;
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+const BudgetOverview: React.FC<BudgetOverviewProps> = ({ budgets, onEdit, onDelete }) => {
+  const { formatCurrency } = useFormatting();
 
-const BudgetOverview: React.FC<BudgetOverviewProps> = ({ budgets }) => {
   const totalBudget = budgets.reduce((sum, budget) => sum + budget.limit, 0);
   const totalSpent = budgets.reduce((sum, budget) => sum + budget.spent, 0);
-  const remainingBudget = totalBudget - totalSpent;
-
-  const pieData = budgets.map((budget) => ({
-    name: budget.category.charAt(0).toUpperCase() + budget.category.slice(1),
-    value: budget.spent,
-  }));
 
   return (
     <Card>
       <CardContent>
-        <Typography variant="h6" gutterBottom>
-          Budget Overview
-        </Typography>
-        
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Budget Overview
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <Typography variant="subtitle2" color="textSecondary">
                 Total Budget
               </Typography>
-              <Typography variant="h4" color="primary">
-                ${totalBudget.toLocaleString()}
+              <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                {formatCurrency(totalBudget)}
               </Typography>
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Typography variant="subtitle2" color="textSecondary">
                 Total Spent
               </Typography>
-              <Typography variant="h4" color={totalSpent > totalBudget ? 'error.main' : 'success.main'}>
-                ${totalSpent.toLocaleString()}
+              <Typography variant="h5" color={totalSpent > totalBudget ? 'error' : 'success'}>
+                {formatCurrency(totalSpent)}
               </Typography>
-            </Box>
-
-            <Box>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Typography variant="subtitle2" color="textSecondary">
                 Remaining
               </Typography>
-              <Typography 
-                variant="h4" 
-                color={remainingBudget < 0 ? 'error.main' : 'success.main'}
-              >
-                ${Math.abs(remainingBudget).toLocaleString()}
-                <Typography component="span" variant="body2" color="text.secondary">
-                  {remainingBudget < 0 ? ' over budget' : ' remaining'}
-                </Typography>
+              <Typography variant="h5" color={totalBudget - totalSpent < 0 ? 'error' : 'success'}>
+                {formatCurrency(totalBudget - totalSpent)}
               </Typography>
-            </Box>
+            </Grid>
           </Grid>
+        </Box>
 
-          <Grid item xs={12} md={8}>
-            <Box sx={{ width: '100%', height: 300 }}>
-              <ResponsiveContainer>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    label={(entry) => `${entry.name}: $${entry.value.toLocaleString()}`}
+        <Grid container spacing={2}>
+          {budgets.map((budget) => {
+            const progress = (budget.spent / budget.limit) * 100;
+            const isOverBudget = progress > 100;
+
+            return (
+              <Grid item xs={12} key={budget.id}>
+                <Box sx={{ mb: 2 }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      mb: 1,
+                    }}
                   >
-                    {pieData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={COLORS[index % COLORS.length]} 
-                      />
-                    ))}
-                  </Pie>
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </Box>
-          </Grid>
+                    <Box>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                        {budget.category}
+                      </Typography>
+                      <Typography variant="caption" color="textSecondary">
+                        {budget.period}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <IconButton size="small" onClick={() => onEdit(budget)}>
+                        <Edit fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => onDelete(budget.id)} color="error">
+                        <Delete fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2">
+                      {formatCurrency(budget.spent)} of {formatCurrency(budget.limit)}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color={isOverBudget ? 'error' : 'success'}
+                    >
+                      {progress.toFixed(1)}%
+                    </Typography>
+                  </Box>
+                  <LinearProgress
+                    variant="determinate"
+                    value={Math.min(progress, 100)}
+                    color={isOverBudget ? 'error' : 'primary'}
+                    sx={{ height: 8, borderRadius: 4 }}
+                  />
+                  {isOverBudget && (
+                    <Typography
+                      variant="caption"
+                      color="error"
+                      sx={{ mt: 0.5, display: 'block' }}
+                    >
+                      Over budget by {formatCurrency(budget.spent - budget.limit)}
+                    </Typography>
+                  )}
+                </Box>
+              </Grid>
+            );
+          })}
         </Grid>
       </CardContent>
     </Card>

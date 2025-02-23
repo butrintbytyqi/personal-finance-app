@@ -1,0 +1,89 @@
+{
+  "common": {
+    "add": "Ajouter",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "total": "Total",
+    "settings": "Paramètres"
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "transactions": "Transactions",
+    "accounts": "Comptes",
+    "budget": "Budget",
+    "settings": "Paramètres"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "newTransaction": "Nouvelle Transaction",
+    "editTransaction": "Modifier la Transaction",
+    "type": "Type",
+    "amount": "Montant",
+    "date": "Date",
+    "category": "Catégorie",
+    "description": "Description",
+    "income": "Revenus",
+    "expense": "Dépense"
+  },
+  "accounts": {
+    "title": "Comptes",
+    "newAccount": "Nouveau Compte",
+    "editAccount": "Modifier le Compte",
+    "accountName": "Nom du Compte",
+    "accountType": "Type de Compte",
+    "balance": "Solde",
+    "accountNumber": "Numéro de Compte",
+    "types": {
+      "checking": "Courant",
+      "savings": "Épargne",
+      "credit": "Carte de Crédit",
+      "investment": "Investissement"
+    }
+  },
+  "budget": {
+    "title": "Budget",
+    "newBudget": "Nouveau Budget",
+    "editBudget": "Modifier le Budget",
+    "category": "Catégorie",
+    "limit": "Limite",
+    "spent": "Dépensé",
+    "remaining": "Restant",
+    "period": "Période",
+    "periods": {
+      "monthly": "Mensuel",
+      "yearly": "Annuel"
+    },
+    "overBudget": "Dépassement de budget de"
+  },
+  "categories": {
+    "food": "Alimentation",
+    "shopping": "Shopping",
+    "transport": "Transport",
+    "utilities": "Factures",
+    "entertainment": "Divertissement",
+    "health": "Santé",
+    "travel": "Voyages",
+    "other": "Autres"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "theme": "Thème",
+    "currency": "Devise",
+    "dateFormat": "Format de Date",
+    "notifications": "Notifications",
+    "themes": {
+      "light": "Clair",
+      "dark": "Sombre"
+    },
+    "themeUpdated": "Thème mis à jour avec succès",
+    "currencyUpdated": "Devise mise à jour avec succès",
+    "dateFormatUpdated": "Format de date mis à jour avec succès",
+    "notificationsUpdated": "Notifications mises à jour avec succès",
+    "languageUpdated": "Langue mise à jour avec succès"
+  }
+}

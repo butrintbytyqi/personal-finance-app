@@ -1,8 +1,9 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { ThemeProvider, CssBaseline, createTheme } from '@mui/material';
-import { store } from './features/store';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { store } from './app/store';
 import { useAppSelector } from './hooks/redux';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
@@ -11,6 +12,7 @@ import Budget from './pages/Budget';
 import Accounts from './pages/Accounts';
 import Settings from './pages/Settings';
 
+// Create AppContent component to use hooks (hooks can't be used in the top level App component due to Redux Provider)
 const AppContent = () => {
   const { darkMode, primaryColor, fontSize } = useAppSelector((state) => state.settings.theme);
 
@@ -22,47 +24,14 @@ const AppContent = () => {
       },
     },
     typography: {
-      fontSize: fontSize === 'small' ? 14 : fontSize === 'large' ? 18 : 16,
-    },
-    components: {
-      MuiCard: {
-        styleOverrides: {
-          root: {
-            borderRadius: 12,
-            boxShadow: darkMode 
-              ? '0 2px 4px rgba(255,255,255,0.1)'
-              : '0 2px 4px rgba(0,0,0,0.1)',
-          },
-        },
-      },
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            borderRadius: 8,
-            textTransform: 'none',
-            fontWeight: 600,
-          },
-        },
-      },
-      MuiTextField: {
-        defaultProps: {
-          variant: 'outlined',
-        },
-        styleOverrides: {
-          root: {
-            '& .MuiOutlinedInput-root': {
-              borderRadius: 8,
-            },
-          },
-        },
-      },
+      fontSize: fontSize === 'small' ? 14 : fontSize === 'large' ? 16 : 15,
     },
   });
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
+      <BrowserRouter>
         <Layout>
           <Routes>
             <Route path="/" element={<Dashboard />} />
@@ -72,7 +41,7 @@ const AppContent = () => {
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </Layout>
-      </Router>
+      </BrowserRouter>
     </ThemeProvider>
   );
 };

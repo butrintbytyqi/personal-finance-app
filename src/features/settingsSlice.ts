@@ -52,6 +52,9 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState,
   reducers: {
+    setState: (state, action: PayloadAction<SettingsState>) => {
+      return action.payload;
+    },
     toggleDarkMode: (state) => {
       state.theme.darkMode = !state.theme.darkMode;
     },
@@ -87,6 +90,7 @@ const settingsSlice = createSlice({
 });
 
 export const {
+  setState,
   toggleDarkMode,
   setPrimaryColor,
   setFontSize,
