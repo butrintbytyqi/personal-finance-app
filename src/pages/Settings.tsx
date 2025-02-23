@@ -12,6 +12,9 @@ import {
   FormControl,
   Alert,
   Snackbar,
+  TextField,
+  Button,
+  InputLabel,
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import {
@@ -21,9 +24,12 @@ import {
   setCurrency,
   setDateFormat,
   updateNotificationSettings,
+  updateAccountInfo,
+  resetSettings,
 } from '../features/settingsSlice';
 import { useTranslation } from '../hooks/useTranslation';
 import LanguageSettings from '../components/settings/LanguageSettings';
+import { ColorPicker } from '../components/common/ColorPicker';
 
 const currencies = [
   { code: 'USD', symbol: '$', name: 'US Dollar' },
@@ -36,6 +42,18 @@ const dateFormats = [
   { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY' },
   { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY' },
   { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD' },
+];
+
+const fontSizes = [
+  { value: 'small', label: 'Small' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'large', label: 'Large' },
+];
+
+const notificationFrequencies = [
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'monthly', label: 'Monthly' },
 ];
 
 const Settings = () => {
@@ -55,6 +73,16 @@ const Settings = () => {
     showSuccessMessage(t('settings.themeUpdated'));
   };
 
+  const handlePrimaryColorChange = (color: string) => {
+    dispatch(setPrimaryColor(color));
+    showSuccessMessage(t('settings.colorUpdated'));
+  };
+
+  const handleFontSizeChange = (event: any) => {
+    dispatch(setFontSize(event.target.value));
+    showSuccessMessage(t('settings.fontSizeUpdated'));
+  };
+
   const handleCurrencyChange = (event: any) => {
     dispatch(setCurrency(event.target.value));
     showSuccessMessage(t('settings.currencyUpdated'));
@@ -68,6 +96,23 @@ const Settings = () => {
   const handleNotificationChange = (setting: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(updateNotificationSettings({ [setting]: event.target.checked }));
     showSuccessMessage(t('settings.notificationsUpdated'));
+  };
+
+  const handleNotificationFrequencyChange = (event: any) => {
+    dispatch(updateNotificationSettings({ frequency: event.target.value }));
+    showSuccessMessage(t('settings.notificationsUpdated'));
+  };
+
+  const handleAccountInfoChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(updateAccountInfo({ [field]: event.target.value }));
+    showSuccessMessage(t('settings.accountUpdated'));
+  };
+
+  const handleResetSettings = () => {
+    if (window.confirm(t('settings.confirmReset'))) {
+      dispatch(resetSettings());
+      showSuccessMessage(t('settings.settingsReset'));
+    }
   };
 
   return (
@@ -93,6 +138,34 @@ const Settings = () => {
                 }
                 label={t('settings.darkMode')}
               />
+
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  {t('settings.primaryColor')}
+                </Typography>
+                <ColorPicker
+                  color={settings.theme.primaryColor}
+                  onChange={handlePrimaryColorChange}
+                />
+              </Box>
+
+              <Box sx={{ mt: 2 }}>
+                <FormControl fullWidth>
+                  <Typography variant="subtitle2" gutterBottom>
+                    {t('settings.fontSize')}
+                  </Typography>
+                  <Select
+                    value={settings.theme.fontSize}
+                    onChange={handleFontSizeChange}
+                  >
+                    {fontSizes.map((size) => (
+                      <MenuItem key={size.value} value={size.value}>
+                        {size.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
 
               <Box sx={{ mt: 2 }}>
                 <FormControl fullWidth>
@@ -171,10 +244,75 @@ const Settings = () => {
                     }
                     label={t('settings.pushNotifications')}
                   />
+
+                  <Box sx={{ mt: 2 }}>
+                    <FormControl fullWidth>
+                      <Typography variant="subtitle2" gutterBottom>
+                        {t('settings.notificationFrequency')}
+                      </Typography>
+                      <Select
+                        value={settings.preferences.notifications.frequency}
+                        onChange={handleNotificationFrequencyChange}
+                      >
+                        {notificationFrequencies.map((frequency) => (
+                          <MenuItem key={frequency.value} value={frequency.value}>
+                            {frequency.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
                 </>
               )}
             </CardContent>
           </Card>
+
+          <Card sx={{ mt: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                {t('settings.account')}
+              </Typography>
+
+              <TextField
+                fullWidth
+                label={t('settings.name')}
+                value={settings.account.name}
+                onChange={handleAccountInfoChange('name')}
+                margin="normal"
+              />
+
+              <TextField
+                fullWidth
+                label={t('settings.email')}
+                type="email"
+                value={settings.account.email}
+                onChange={handleAccountInfoChange('email')}
+                margin="normal"
+              />
+
+              <TextField
+                fullWidth
+                label={t('settings.timezone')}
+                value={settings.account.timezone}
+                onChange={handleAccountInfoChange('timezone')}
+                margin="normal"
+              />
+            </CardContent>
+          </Card>
+
+          <Box sx={{ mt: 3, textAlign: 'right' }}>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleResetSettings}
+            >
+              {t('settings.resetSettings')}
+            </Button>
+          </Box>
+        </Grid>
+
+        <Grid item xs={12}>
+          <LanguageSettings />
         </Grid>
       </Grid>
 

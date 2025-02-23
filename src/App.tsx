@@ -11,6 +11,7 @@ import Transactions from './pages/Transactions';
 import Budget from './pages/Budget';
 import Accounts from './pages/Accounts';
 import Settings from './pages/Settings';
+import Debt from './pages/Debt';
 
 // Create AppContent component to use hooks (hooks can't be used in the top level App component due to Redux Provider)
 const AppContent = () => {
@@ -39,6 +40,7 @@ const AppContent = () => {
             <Route path="/budget" element={<Budget />} />
             <Route path="/accounts" element={<Accounts />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/debt" element={<Debt />} />
           </Routes>
         </Layout>
       </BrowserRouter>

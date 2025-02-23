@@ -21,8 +21,10 @@ import {
   AccountBalance as AccountBalanceIcon,
   PieChart as PieChartIcon,
   Settings as SettingsIcon,
+  CreditCard as CreditCardIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -30,20 +32,22 @@ interface LayoutProps {
 
 const drawerWidth = 240;
 
-const menuItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-  { text: 'Transactions', icon: <ReceiptIcon />, path: '/transactions' },
-  { text: 'Budget', icon: <PieChartIcon />, path: '/budget' },
-  { text: 'Accounts', icon: <AccountBalanceIcon />, path: '/accounts' },
-  { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
-];
-
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
+
+  const menuItems = [
+    { text: t('navigation.dashboard'), icon: <DashboardIcon />, path: '/' },
+    { text: t('navigation.transactions'), icon: <ReceiptIcon />, path: '/transactions' },
+    { text: t('navigation.budgets'), icon: <PieChartIcon />, path: '/budget' },
+    { text: t('navigation.accounts'), icon: <AccountBalanceIcon />, path: '/accounts' },
+    { text: t('navigation.debt'), icon: <CreditCardIcon />, path: '/debt' },
+    { text: t('navigation.settings'), icon: <SettingsIcon />, path: '/settings' },
+  ];
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -106,7 +110,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            {menuItems.find((item) => item.path === location.pathname)?.text || 'Dashboard'}
+            {menuItems.find((item) => item.path === location.pathname)?.text || t('navigation.dashboard')}
           </Typography>
         </Toolbar>
       </AppBar>

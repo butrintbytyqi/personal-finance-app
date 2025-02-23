@@ -1,11 +1,13 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import financesReducer from '../features/financesSlice';
 import settingsReducer from '../features/settingsSlice';
+import debtReducer from '../features/debtSlice';
 import { loadState, saveState } from './localStorage';
 
 const rootReducer = combineReducers({
   finances: financesReducer,
   settings: settingsReducer,
+  debt: debtReducer,
 });
 
 // Load persisted state
@@ -30,7 +32,8 @@ store.subscribe(() => {
         isLoading: false,
         error: null
       },
-      settings: state.settings // Persist entire settings state
+      settings: state.settings, // Persist entire settings state
+      debt: state.debt // Persist entire debt state
     });
   }, 1000); // Save after 1 second of no changes
 });
